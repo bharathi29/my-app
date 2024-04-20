@@ -92,9 +92,10 @@ const HomeScreen = ({ navigation }) => {
                 <Text>{'\n'}{'\n'}NOW{'\t'}{'\t'}{'\t'}{'\t'}TODAY{'\n'}</Text>
                 {uvIndex && (
                     <Text style={styles.uvIndexText}>
-                        UV Index:{'\t'}{'\t'}{'\t'}{uvIndex}
+                        UV Index:  {'\t'}{'\t'}{'\t'}{uvIndex}
                     </Text>
                 )}
+                
                 
             </View>
 
