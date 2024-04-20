@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "434156618367",
+    "project_id": "rayresist1",
+    "storage_bucket": "rayresist1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434156618367:android:5a180c7aca5895196f354a",
+        "android_client_info": {
+          "package_name": "Ray.Resist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8ZBI4ZD-dvYd7qNzZADixMmi7OPVYjIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434156618367:android:e97f156b41c5e4566f354a",
+        "android_client_info": {
+          "package_name": "com.bharathi29.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8ZBI4ZD-dvYd7qNzZADixMmi7OPVYjIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
