@@ -2,18 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome, Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import firebaseConfig from './config';
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const openWeatherKey = 'a540b4e2abe5bef38f4997518ab068e3';
 
 const HomeScreen = ({ navigation }) => {
     const [uvIndex, setUVIndex] = useState(null);
+    const [temperature, setTemperature] = useState(null);
+    const [humidity, setHumidity] = useState(null);
     const [remainingSecs, setRemainingSecs] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const [showTimer, setShowTimer] = useState(false);
 
     useEffect(() => {
-        fetchUVIndexForCurrentLocation();
+        fetchWeatherAndUVIndexForCurrentLocation();
     }, []);
 
-    const fetchUVIndexForCurrentLocation = async () => {
+    const fetchWeatherAndUVIndexForCurrentLocation = async () => {
         try {
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -24,20 +33,35 @@ const HomeScreen = ({ navigation }) => {
             const location = await Location.getCurrentPositionAsync({});
             const { latitude, longitude } = location.coords;
 
-
-            console.log('Latitude:', latitude, 'Longitude:', longitude);
-
-
-            const response = await fetch(
-                `https://api.openweathermap.org/data/2.5/uvi?lat=${latitude}&lon=${longitude}&appid=a540b4e2abe5bef38f4997518ab068e3`
+            const weatherResponse = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherKey}&units=metric`
             );
-            const data = await response.json();
+            const weatherData = await weatherResponse.json();
 
-            console.log('UV Index Data:', data);
+            console.log('Weather Data:', weatherData);
 
-            setUVIndex(data.value);
+            setTemperature(weatherData.main.temp);
+            setHumidity(weatherData.main.humidity);
+
+            const uvResponse = await fetch(
+                `https://api.openweathermap.org/data/2.5/uvi?lat=${latitude}&lon=${longitude}&appid=${openWeatherKey}`
+            );
+            const uvData = await uvResponse.json();
+
+            console.log('UV Index Data:', uvData);
+
+            setUVIndex(uvData.value);
+
+            const db = firebase.firestore();
+            db.collection('uvIndexData').add({
+                latitude: latitude,
+                longitude: longitude,
+                uvIndex: uvData.value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
         } catch (error) {
-            console.error('Error fetching UV index:', error);
+            console.error('Error fetching data:', error);
         }
     };
 
@@ -95,8 +119,16 @@ const HomeScreen = ({ navigation }) => {
                         UV Index:  {'\t'}{'\t'}{'\t'}{uvIndex}
                     </Text>
                 )}
-                
-                
+                {temperature && (
+                    <Text style={styles.weatherText}>
+                        Temperature: {'\t'}{temperature}°C
+                    </Text>
+                )}
+                {humidity && (
+                    <Text style={styles.weatherText}>
+                        Humidity: {'\t'}{humidity}%
+                    </Text>
+                )}
             </View>
 
             {!showTimer && (
@@ -160,6 +192,11 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 10,
     },
+    weatherText: {
+        fontSize: 18,
+        textAlign: 'center',
+        marginTop: 5,
+    },
     roundButton: {
         width: '30%',
         justifyContent: 'center',
@@ -212,3 +249,4 @@ const styles = StyleSheet.create({
         color: "#FF851B"
     }
 });
+
